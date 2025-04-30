@@ -22,7 +22,7 @@ jobs:
 
             // Extract the selected option label from the issue body
             const body = issue.body;
-            const match = body.match(/### Apply labels to this issue\s*\n(.*?)\n/);
+            const match = body.match(/### Labels\s*\n(.*?)\n/);
             const optionLabel = match ? match[1].trim() : null;
 
             const allowedOptions = [
