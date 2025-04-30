@@ -44,14 +44,7 @@ jobs:
                 repo: context.repo.repo,
                 body: `❌ נא לבחור תפריט מהרשימה: ${allowedOptions.join(", ")}`
               });
-
-              await github.issues.update({
-                issue_number: issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: "closed"
-              });
-
+              
               return;
             }
 
