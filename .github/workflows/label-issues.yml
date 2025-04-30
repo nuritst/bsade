@@ -20,9 +20,9 @@ jobs:
             const issue = context.payload.issue;
             const defaultLabel = "סטטוס: חדש";
 
-            // Extract the selected option label from the issue body
-            const body = issue.body;
-            const match = body.match(/### Labels\s*\n(.*?)\n/);
+            // Ensure body is a string and search for dropdown response
+            const body = issue.body || "";
+            const match = body.match(/### Labels\s*\n+([^\n]+)/); // Adjust if label differs
             const optionLabel = match ? match[1].trim() : null;
 
             const allowedOptions = [
