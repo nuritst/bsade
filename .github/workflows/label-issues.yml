@@ -7,7 +7,7 @@ on:
 
 permissions:
   issues: write
-  
+
 jobs:
   label-new-issues:
     runs-on: ubuntu-latest
@@ -18,9 +18,37 @@ jobs:
         with:
           script: |
             const issue = context.payload.issue;
-            const label = "סטטוס: חדש";
+            const defaultLabel = "סטטוס: חדש";
+
+            // Extract the selected option label from the issue body
+            const body = issue.body;
+            const match = body.match(/### Select an Option\s*\n(.*?)\n/);
+            const optionLabel = match ? match[1].trim() : null;
+
+            const allowedOptions = [
+              "option: 1001",
+              "option: 1002",
+              "option: 1003",
+              "option: 1004",
+              "option: 1005"
+            ];
+
+            let labelsToAdd = [defaultLabel];
+
+            if (optionLabel && allowedOptions.includes(optionLabel)) {
+              labelsToAdd.push(optionLabel);
+            } else {
+              await github.issues.createComment({
+                issue_number: issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `⚠️ נא לבחור תפריט מהרשימה: ${allowedOptions.join(", ")}.`
+              });
+              return;
+            }
+
             await github.issues.addLabels({
               ...context.repo,
               issue_number: issue.number,
-              labels: [label]
+              labels: labelsToAdd
             });
