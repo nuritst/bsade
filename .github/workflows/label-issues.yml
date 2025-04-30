@@ -20,9 +20,8 @@ jobs:
             const issue = context.payload.issue;
             const defaultLabel = "סטטוס: חדש";
 
-            // Ensure body is a string and search for dropdown response
             const body = issue.body || "";
-            const match = body.match(/### Labels\s*\n+([^\n]+)/); // Adjust if label differs
+            const match = body.match(/### Labels\s*\n+([^\n]+)/);
             const optionLabel = match ? match[1].trim() : null;
 
             const allowedOptions = [
@@ -30,22 +29,35 @@ jobs:
               "תפריט: 9999"
             ];
 
-            let labelsToAdd = [defaultLabel];
+            // Always apply the default label first
+            await github.issues.addLabels({
+              ...context.repo,
+              issue_number: issue.number,
+              labels: [defaultLabel]
+            });
 
-            if (optionLabel && allowedOptions.includes(optionLabel)) {
-              labelsToAdd.push(optionLabel);
-            } else {
+            // Then check if option label is valid
+            if (!optionLabel || !allowedOptions.includes(optionLabel)) {
               await github.issues.createComment({
                 issue_number: issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `⚠️ נא לבחור תפריט מהרשימה: ${allowedOptions.join(", ")}.`
+                body: `❌ נא לבחור תפריט מהרשימה: ${allowedOptions.join(", ")}`
               });
+
+              await github.issues.update({
+                issue_number: issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: "closed"
+              });
+
               return;
             }
 
+            // Add the valid option label
             await github.issues.addLabels({
               ...context.repo,
               issue_number: issue.number,
-              labels: labelsToAdd
+              labels: [optionLabel]
             });
