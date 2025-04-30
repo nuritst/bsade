@@ -26,11 +26,8 @@ jobs:
             const optionLabel = match ? match[1].trim() : null;
 
             const allowedOptions = [
-              "option: 1001",
-              "option: 1002",
-              "option: 1003",
-              "option: 1004",
-              "option: 1005"
+              "תפריט: 940",
+              "תפריט: 9999"
             ];
 
             let labelsToAdd = [defaultLabel];
